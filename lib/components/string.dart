@@ -6,12 +6,13 @@ import 'package:intl/intl.dart';
 class JFCString extends Control {
   final List<String>? enumeration;
 
-  const JFCString({
+  JFCString({
     super.key,
     required super.schema,
     required super.scope,
     required super.isRequired,
     required super.defaultValue,
+    required super.onValueChanged,
     super.options,
     this.enumeration,
   });
@@ -41,18 +42,33 @@ class JFCStringState extends State<JFCString> {
       _maxLength = widget.schema["maxLength"];
     }
 
-    value = widget.defaultValue ?? "";
-    if (value.isEmpty && widget.enumeration != null) {
-      value = widget.enumeration!.first.snakeCase;
+    String val = widget.defaultValue ?? "";
+    if (val.isEmpty && widget.enumeration != null) {
+      val = widget.enumeration!.first.snakeCase;
     }
-    _controller.text = value;
+
+    onValueChanged(val);
   }
 
-  String? errorText() {
+  String? errorText({String? value}) {
+    value ??= this.value;
     if (value.isNotEmpty && value.length < _minLength) {
       return "Value must have at least $_minLength characters";
     }
     return null;
+  }
+
+  void onValueChanged(String? val) {
+    if (val == null) {
+      return;
+    }
+
+    _controller.text = val;
+    widget.onValueChanged(val, error: errorText(value: val));
+
+    setState(() {
+      value = val;
+    });
   }
 
   Widget buildRadio(BuildContext context) {
@@ -64,7 +80,7 @@ class JFCStringState extends State<JFCString> {
         (String element) {
           return IntrinsicWidth(
             child: RadioListTile<String>(
-              value: element,
+              value: element.snakeCase,
               groupValue: value,
               dense: true,
               title: Text(
@@ -74,9 +90,7 @@ class JFCStringState extends State<JFCString> {
               onChanged: widget.options?["readonly"] == true
                   ? null
                   : (val) {
-                      setState(() {
-                        value = val ?? "";
-                      });
+                      onValueChanged(val ?? "");
                     },
             ),
           );
@@ -100,10 +114,8 @@ class JFCStringState extends State<JFCString> {
       ),
       onChanged: widget.options?["readonly"] == true
           ? null
-          : (String? newValue) {
-              setState(() {
-                value = newValue ?? "";
-              });
+          : (String? val) {
+              onValueChanged(val ?? "");
             },
       items:
           widget.enumeration!.map<DropdownMenuItem<String>>((String element) {
@@ -160,10 +172,8 @@ class JFCStringState extends State<JFCString> {
                     return;
                   }
 
-                  setState(() {
-                    value = _dateFormat.format(picked);
-                    _controller.text = value;
-                  });
+                  String val = _dateFormat.format(picked);
+                  onValueChanged(val);
                 },
         ),
       ),
@@ -175,9 +185,7 @@ class JFCStringState extends State<JFCString> {
       controller: _controller,
       enabled: widget.options?["readonly"] != true,
       onChanged: ((val) {
-        setState(() {
-          value = val;
-        });
+        onValueChanged(val);
       }),
       textAlign: TextAlign.start,
       textAlignVertical: TextAlignVertical.center,
@@ -196,10 +204,7 @@ class JFCStringState extends State<JFCString> {
           onPressed: value.isEmpty
               ? null
               : () {
-                  _controller.text = "";
-                  setState(() {
-                    value = "";
-                  });
+                  onValueChanged("");
                 },
         ),
       ),

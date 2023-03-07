@@ -7,12 +7,13 @@ import 'dart:math' as math;
 class JFCNumber extends Control {
   final int precision;
 
-  const JFCNumber({
+  JFCNumber({
     super.key,
     required super.schema,
     required super.scope,
     required super.isRequired,
     required super.defaultValue,
+    required super.onValueChanged,
     super.options,
     this.precision = 0,
   });
@@ -41,11 +42,7 @@ class JFCNumberState extends State<JFCNumber> {
       _maximum = widget.schema["maximum"];
     }
 
-    value = widget.defaultValue;
-    if (value != null) {
-      _controller.text = value.toString();
-    }
-
+    onValueChanged(widget.defaultValue);
     initFormatters();
   }
 
@@ -63,18 +60,30 @@ class JFCNumberState extends State<JFCNumber> {
     }
   }
 
-  String? errorText() {
+  String? errorText({double? value}) {
+    value ??= this.value;
     if (_controller.text.isEmpty || value == null) {
       return widget.isRequired ? "Value is required" : null;
     }
 
-    if (_minimum != null && value! < _minimum!) {
+    if (_minimum != null && value < _minimum!) {
       return "Value must be greater than or equal to $_minimum";
     }
-    if (_maximum != null && value! > _maximum!) {
+    if (_maximum != null && value > _maximum!) {
       return "Value must be less than or equal to $_maximum";
     }
     return null;
+  }
+
+  void onValueChanged(double? val) {
+    if (val != null) {
+      _controller.text = val.toString();
+    }
+    widget.onValueChanged(val, error: errorText(value: val));
+
+    setState(() {
+      value = val;
+    });
   }
 
   @override
@@ -84,11 +93,9 @@ class JFCNumberState extends State<JFCNumber> {
       child: TextField(
         controller: _controller,
         enabled: widget.options?["readonly"] != true,
-        onChanged: ((val) {
-          setState(() {
-            value = double.tryParse(val) ?? 0;
-          });
-        }),
+        onChanged: (val) {
+          onValueChanged(double.tryParse(val));
+        },
         keyboardType: TextInputType.number,
         inputFormatters: _formatters,
         textAlign: TextAlign.start,
@@ -109,12 +116,10 @@ class JFCNumberState extends State<JFCNumber> {
                   padding: EdgeInsets.zero,
                   child: InkWell(
                     onTap: () {
-                      setState(() {
-                        value ??= 0;
-                        value = value! + math.pow(10, -widget.precision);
-                        value = double.tryParse(value!.toStringAsFixed(2));
-                        _controller.text = value.toString();
-                      });
+                      double? val = value ?? 0;
+                      val = val + math.pow(10, -widget.precision);
+                      val = double.tryParse(val.toStringAsFixed(2));
+                      onValueChanged(val);
                     },
                     child: const Icon(Icons.arrow_drop_up, size: 18),
                   ),
@@ -125,12 +130,10 @@ class JFCNumberState extends State<JFCNumber> {
                   padding: EdgeInsets.zero,
                   child: InkWell(
                     onTap: () {
-                      setState(() {
-                        value ??= 0;
-                        value = value! - math.pow(10, -widget.precision);
-                        value = double.tryParse(value!.toStringAsFixed(2));
-                        _controller.text = value.toString();
-                      });
+                      double? val = value ?? 0;
+                      val = val - math.pow(10, -widget.precision);
+                      val = double.tryParse(val.toStringAsFixed(2));
+                      onValueChanged(val);
                     },
                     child: const Icon(Icons.arrow_drop_down, size: 18),
                   ),

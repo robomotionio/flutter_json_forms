@@ -3,11 +3,22 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_json_forms/components/control.dart';
 import 'package:flutter_json_forms/const.dart';
+import 'package:flutter_json_forms/const.dart' as jfc;
 
 class JsonForm extends StatefulWidget {
   final dynamic json;
+  final List<Control> _controls = [];
+  final Map<String, dynamic> _formData = {};
+  final Map<String, String> _errors = {};
 
-  const JsonForm({super.key, required this.json});
+  JsonForm({super.key, required this.json});
+
+  Map<String, dynamic> get formData {
+    assert(_errors.isEmpty);
+    return _formData;
+  }
+
+  Map<String, dynamic> get errors => _errors;
 
   @override
   JsonFormState createState() => JsonFormState();
@@ -63,6 +74,19 @@ class JsonFormState extends State<JsonForm> {
         : Map<String, dynamic>.from(element["options"]);
   }
 
+  jfc.ValueChanged getValueChanged(String scope) {
+    return (value, {error}) {
+      String key = scope.split("/").last;
+      widget._formData[key] = value;
+
+      if (error == null) {
+        widget._errors.remove(key);
+      } else {
+        widget._errors[key] = error;
+      }
+    };
+  }
+
   Widget buildElement(BuildContext context, Map<String, dynamic> element) {
     switch (element["type"]) {
       case ElementTypes.horizontalLayout:
@@ -73,15 +97,22 @@ class JsonFormState extends State<JsonForm> {
 
       case ElementTypes.control:
         String scope = element["scope"] ?? "";
+        Control? control = Control.from(
+          schema: schemaGet(scope),
+          options: getOptions(element),
+          scope: scope,
+          isRequired: isRequired(scope),
+          defaultValue: getDefaultValue(scope),
+          onValueChanged: getValueChanged(scope),
+        );
+
+        if (control == null) {
+          return Container();
+        }
+
+        widget._controls.add(control);
         return Expanded(
-          child: Control.from(
-                schema: schemaGet(scope),
-                options: getOptions(element),
-                scope: scope,
-                isRequired: isRequired(scope),
-                defaultValue: getDefaultValue(scope),
-              ) ??
-              Container(),
+          child: control,
         );
 
       default:

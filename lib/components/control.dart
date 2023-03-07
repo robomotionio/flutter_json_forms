@@ -3,6 +3,7 @@ import 'package:flutter_json_forms/components/boolean.dart';
 import 'package:flutter_json_forms/components/number.dart';
 import 'package:flutter_json_forms/components/string.dart';
 import 'package:flutter_json_forms/const.dart';
+import 'package:flutter_json_forms/const.dart' as jfc;
 
 abstract class Control extends StatefulWidget {
   final Map<String, dynamic> schema;
@@ -10,6 +11,7 @@ abstract class Control extends StatefulWidget {
   final String scope;
   final bool isRequired;
   final dynamic defaultValue;
+  final jfc.ValueChanged onValueChanged;
 
   const Control({
     super.key,
@@ -17,6 +19,7 @@ abstract class Control extends StatefulWidget {
     required this.scope,
     required this.isRequired,
     required this.defaultValue,
+    required this.onValueChanged,
     this.options,
   });
 
@@ -27,8 +30,9 @@ abstract class Control extends StatefulWidget {
 
   static Control? from({
     required Map<String, dynamic> schema,
-    Map<String, dynamic>? options,
     required String scope,
+    required jfc.ValueChanged onValueChanged,
+    Map<String, dynamic>? options,
     bool isRequired = false,
     dynamic defaultValue,
     Key? key,
@@ -38,6 +42,7 @@ abstract class Control extends StatefulWidget {
         return JFCString(
           schema: schema,
           scope: scope,
+          onValueChanged: onValueChanged,
           isRequired: isRequired,
           defaultValue: defaultValue,
           enumeration:
@@ -50,6 +55,7 @@ abstract class Control extends StatefulWidget {
         return JFCNumber(
           schema: schema,
           scope: scope,
+          onValueChanged: onValueChanged,
           isRequired: isRequired,
           defaultValue: defaultValue,
           options: options,
@@ -60,6 +66,7 @@ abstract class Control extends StatefulWidget {
         return JFCNumber(
           schema: schema,
           scope: scope,
+          onValueChanged: onValueChanged,
           isRequired: isRequired,
           defaultValue: defaultValue,
           options: options,
@@ -71,6 +78,7 @@ abstract class Control extends StatefulWidget {
         return JFCBoolean(
           schema: schema,
           scope: scope,
+          onValueChanged: onValueChanged,
           isRequired: isRequired,
           defaultValue: defaultValue,
           options: options,

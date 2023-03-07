@@ -17,3 +17,5 @@ class ControlTypes {
   static const String number = "number";
   static const String boolean = "boolean";
 }
+
+typedef ValueChanged = void Function(dynamic value, {String? error});

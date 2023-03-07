@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_json_forms/json_form.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+  final JsonForm jsonForm = JsonForm(json: json);
 
   // This widget is the root of your application.
   @override
@@ -20,9 +21,13 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         body: SizedBox(
           width: 1080,
-          child: const JsonForm(
-            json: json,
-          ),
+          child: jsonForm,
+        ),
+        floatingActionButton: IconButton(
+          icon: const Icon(Icons.data_object),
+          onPressed: () {
+            print(jsonForm.formData);
+          },
         ),
       ),
     );

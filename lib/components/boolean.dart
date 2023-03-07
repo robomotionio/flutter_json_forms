@@ -3,12 +3,13 @@ import 'package:recase/recase.dart';
 import 'package:flutter_json_forms/components/control.dart';
 
 class JFCBoolean extends Control {
-  const JFCBoolean({
+  JFCBoolean({
     super.key,
     required super.schema,
     required super.scope,
     required super.isRequired,
     required super.defaultValue,
+    required super.onValueChanged,
     super.options,
   });
 
@@ -22,7 +23,14 @@ class JFCBooleanState extends State<JFCBoolean> {
   @override
   void initState() {
     super.initState();
-    value = widget.defaultValue;
+    onValueChanged(widget.defaultValue);
+  }
+
+  void onValueChanged(bool? val) {
+    setState(() {
+      value = val;
+    });
+    widget.onValueChanged(val);
   }
 
   @override
@@ -38,11 +46,7 @@ class JFCBooleanState extends State<JFCBoolean> {
           widget.label.titleCase,
           style: const TextStyle(fontSize: 16),
         ),
-        onChanged: (val) {
-          setState(() {
-            value = val;
-          });
-        },
+        onChanged: (val) {},
       ),
     );
   }
