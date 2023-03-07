@@ -4,12 +4,15 @@ import 'package:recase/recase.dart';
 import 'package:intl/intl.dart';
 
 class JFCString extends Control {
+  final List<String>? enumeration;
+
   const JFCString({
     super.key,
     required super.schema,
     required super.scope,
     required super.isRequired,
     required super.defaultValue,
+    this.enumeration,
   });
 
   @override
@@ -38,6 +41,9 @@ class JFCStringState extends State<JFCString> {
     }
 
     value = widget.defaultValue ?? "";
+    if (value.isEmpty && widget.enumeration != null) {
+      value = widget.enumeration!.first.snakeCase;
+    }
     _controller.text = value;
   }
 
@@ -46,6 +52,37 @@ class JFCStringState extends State<JFCString> {
       return "Value must have at least $_minLength characters";
     }
     return null;
+  }
+
+  Widget buildDropDown(BuildContext context) {
+    return DropdownButton<String>(
+      value: value,
+      icon: const Icon(Icons.arrow_drop_down),
+      iconSize: 32,
+      isExpanded: true,
+      itemHeight: 56,
+      underline: Container(
+        height: 2,
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFFBDBDBD)),
+        ),
+      ),
+      onChanged: (String? newValue) {
+        setState(() {
+          value = newValue ?? "";
+        });
+      },
+      items:
+          widget.enumeration!.map<DropdownMenuItem<String>>((String element) {
+        return DropdownMenuItem<String>(
+          value: element.snakeCase,
+          child: Text(
+            element,
+            style: const TextStyle(fontSize: 16),
+          ),
+        );
+      }).toList(),
+    );
   }
 
   Widget buildDatePicker(BuildContext context) {
@@ -128,7 +165,11 @@ class JFCStringState extends State<JFCString> {
         child = buildDatePicker(context);
         break;
       default:
-        child = buildTextField(context);
+        if (widget.enumeration != null) {
+          child = buildDropDown(context);
+        } else {
+          child = buildTextField(context);
+        }
     }
 
     return Padding(

@@ -41,6 +41,8 @@ abstract class Control extends StatefulWidget {
           scope: scope,
           isRequired: isRequired,
           defaultValue: defaultValue,
+          enumeration:
+              schema["enum"] != null ? List<String>.from(schema["enum"]) : null,
           key: key,
         );
 
