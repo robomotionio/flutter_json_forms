@@ -42,7 +42,12 @@ class JFCNumberState extends State<JFCNumber> {
       _maximum = widget.schema["maximum"];
     }
 
-    onValueChanged(widget.defaultValue);
+    double? val = widget.defaultValue;
+    onValueChanged(val);
+    if (val != null) {
+      _controller.text = val.toString();
+    }
+
     initFormatters();
   }
 
@@ -76,9 +81,6 @@ class JFCNumberState extends State<JFCNumber> {
   }
 
   void onValueChanged(double? val) {
-    if (val != null) {
-      _controller.text = val.toString();
-    }
     widget.onValueChanged(val, error: errorText(value: val));
 
     setState(() {
@@ -120,6 +122,7 @@ class JFCNumberState extends State<JFCNumber> {
                       val = val + math.pow(10, -widget.precision);
                       val = double.tryParse(val.toStringAsFixed(2));
                       onValueChanged(val);
+                      _controller.text = val.toString();
                     },
                     child: const Icon(Icons.arrow_drop_up, size: 18),
                   ),
@@ -134,6 +137,7 @@ class JFCNumberState extends State<JFCNumber> {
                       val = val - math.pow(10, -widget.precision);
                       val = double.tryParse(val.toStringAsFixed(2));
                       onValueChanged(val);
+                      _controller.text = val.toString();
                     },
                     child: const Icon(Icons.arrow_drop_down, size: 18),
                   ),

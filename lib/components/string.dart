@@ -48,6 +48,7 @@ class JFCStringState extends State<JFCString> {
     }
 
     onValueChanged(val);
+    _controller.text = val;
   }
 
   String? errorText({String? value}) {
@@ -63,7 +64,6 @@ class JFCStringState extends State<JFCString> {
       return;
     }
 
-    _controller.text = val;
     widget.onValueChanged(val, error: errorText(value: val));
 
     setState(() {
@@ -174,6 +174,7 @@ class JFCStringState extends State<JFCString> {
 
                   String val = _dateFormat.format(picked);
                   onValueChanged(val);
+                  _controller.text = val;
                 },
         ),
       ),
@@ -184,6 +185,7 @@ class JFCStringState extends State<JFCString> {
     return TextField(
       controller: _controller,
       enabled: widget.options?["readonly"] != true,
+      obscureText: widget.options?["secret"] == true,
       onChanged: ((val) {
         onValueChanged(val);
       }),
@@ -205,6 +207,7 @@ class JFCStringState extends State<JFCString> {
               ? null
               : () {
                   onValueChanged("");
+                  _controller.text = "";
                 },
         ),
       ),
