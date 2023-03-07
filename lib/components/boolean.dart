@@ -32,6 +32,7 @@ class JFCBooleanState extends State<JFCBoolean> {
       child: CheckboxListTile(
         value: value ?? false,
         dense: true,
+        enabled: widget.options?["readonly"] != true,
         controlAffinity: ListTileControlAffinity.leading,
         title: Text(
           widget.label.titleCase,

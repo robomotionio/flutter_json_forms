@@ -83,6 +83,7 @@ class JFCNumberState extends State<JFCNumber> {
       padding: const EdgeInsets.all(8),
       child: TextField(
         controller: _controller,
+        enabled: widget.options?["readonly"] != true,
         onChanged: ((val) {
           setState(() {
             value = double.tryParse(val) ?? 0;

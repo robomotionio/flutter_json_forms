@@ -71,11 +71,13 @@ class JFCStringState extends State<JFCString> {
                 element,
                 style: const TextStyle(fontSize: 16),
               ),
-              onChanged: (val) {
-                setState(() {
-                  value = val ?? "";
-                });
-              },
+              onChanged: widget.options?["readonly"] == true
+                  ? null
+                  : (val) {
+                      setState(() {
+                        value = val ?? "";
+                      });
+                    },
             ),
           );
         },
@@ -96,11 +98,13 @@ class JFCStringState extends State<JFCString> {
           border: Border.all(color: const Color(0xFFBDBDBD)),
         ),
       ),
-      onChanged: (String? newValue) {
-        setState(() {
-          value = newValue ?? "";
-        });
-      },
+      onChanged: widget.options?["readonly"] == true
+          ? null
+          : (String? newValue) {
+              setState(() {
+                value = newValue ?? "";
+              });
+            },
       items:
           widget.enumeration!.map<DropdownMenuItem<String>>((String element) {
         return DropdownMenuItem<String>(
@@ -132,6 +136,7 @@ class JFCStringState extends State<JFCString> {
       controller: _controller,
       onTap: () async {},
       readOnly: true,
+      enabled: widget.options?["readonly"] != true,
       decoration: InputDecoration(
         labelText: widget.label.titleCase,
         hintText: "dd.MM.yyyy",
@@ -141,23 +146,25 @@ class JFCStringState extends State<JFCString> {
           tooltip: "Select",
           splashRadius: 24,
           iconSize: 18,
-          onPressed: () async {
-            DateTime? picked = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(1900),
-              lastDate: DateTime(2099),
-            );
+          onPressed: widget.options?["readonly"] == true
+              ? null
+              : () async {
+                  DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime(2099),
+                  );
 
-            if (picked == null) {
-              return;
-            }
+                  if (picked == null) {
+                    return;
+                  }
 
-            setState(() {
-              value = _dateFormat.format(picked);
-              _controller.text = value;
-            });
-          },
+                  setState(() {
+                    value = _dateFormat.format(picked);
+                    _controller.text = value;
+                  });
+                },
         ),
       ),
     );
@@ -166,6 +173,7 @@ class JFCStringState extends State<JFCString> {
   Widget buildTextField(BuildContext context) {
     return TextField(
       controller: _controller,
+      enabled: widget.options?["readonly"] != true,
       onChanged: ((val) {
         setState(() {
           value = val;
