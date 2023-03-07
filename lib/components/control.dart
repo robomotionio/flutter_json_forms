@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_json_forms/components/boolean.dart';
 import 'package:flutter_json_forms/components/number.dart';
 import 'package:flutter_json_forms/components/string.dart';
 import 'package:flutter_json_forms/const.dart';
@@ -59,6 +60,15 @@ abstract class Control extends StatefulWidget {
           isRequired: isRequired,
           defaultValue: defaultValue,
           precision: 2,
+          key: key,
+        );
+
+      case ControlTypes.boolean:
+        return JFCBoolean(
+          schema: schema,
+          scope: scope,
+          isRequired: isRequired,
+          defaultValue: defaultValue,
           key: key,
         );
 

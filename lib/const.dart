@@ -15,4 +15,5 @@ class ControlTypes {
   static const String string = "string";
   static const String integer = "integer";
   static const String number = "number";
+  static const String boolean = "boolean";
 }
