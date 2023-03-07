@@ -9,6 +9,7 @@ class JFCBoolean extends Control {
     required super.scope,
     required super.isRequired,
     required super.defaultValue,
+    super.options,
   });
 
   @override

@@ -13,6 +13,7 @@ class JFCNumber extends Control {
     required super.scope,
     required super.isRequired,
     required super.defaultValue,
+    super.options,
     this.precision = 0,
   });
 

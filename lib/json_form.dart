@@ -27,14 +27,14 @@ class JsonFormState extends State<JsonForm> {
     }
   }
 
-  Map<String, dynamic>? schemaGet(String scope) {
-    Map<String, dynamic>? schema = Map<String, dynamic>.from(
+  Map<String, dynamic> schemaGet(String scope) {
+    Map<String, dynamic> schema = Map<String, dynamic>.from(
       json[FormTypes.schema],
     );
 
     scope.split("/").forEach((p) {
       if (p == "#") return;
-      schema = schema?[p];
+      schema = schema[p] ?? {};
     });
 
     return schema;
@@ -57,6 +57,12 @@ class JsonFormState extends State<JsonForm> {
     return formData[scope.split("/").last];
   }
 
+  Map<String, dynamic>? getOptions(Map<String, dynamic> element) {
+    return element["options"] == null
+        ? null
+        : Map<String, dynamic>.from(element["options"]);
+  }
+
   Widget buildElement(BuildContext context, Map<String, dynamic> element) {
     switch (element["type"]) {
       case ElementTypes.horizontalLayout:
@@ -69,10 +75,11 @@ class JsonFormState extends State<JsonForm> {
         String scope = element["scope"] ?? "";
         return Expanded(
           child: Control.from(
-                schemaGet(scope),
-                scope,
-                isRequired(scope),
-                getDefaultValue(scope),
+                schema: schemaGet(scope),
+                options: getOptions(element),
+                scope: scope,
+                isRequired: isRequired(scope),
+                defaultValue: getDefaultValue(scope),
               ) ??
               Container(),
         );

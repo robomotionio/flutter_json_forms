@@ -6,6 +6,7 @@ import 'package:flutter_json_forms/const.dart';
 
 abstract class Control extends StatefulWidget {
   final Map<String, dynamic> schema;
+  final Map<String, dynamic>? options;
   final String scope;
   final bool isRequired;
   final dynamic defaultValue;
@@ -16,6 +17,7 @@ abstract class Control extends StatefulWidget {
     required this.scope,
     required this.isRequired,
     required this.defaultValue,
+    this.options,
   });
 
   @override
@@ -23,17 +25,14 @@ abstract class Control extends StatefulWidget {
 
   String get label => "${scope.split("/").last} ${isRequired ? '*' : ''}";
 
-  static Control? from(
-    Map<String, dynamic>? schema,
-    String scope,
-    bool isRequired,
-    dynamic defaultValue, {
+  static Control? from({
+    required Map<String, dynamic> schema,
+    Map<String, dynamic>? options,
+    required String scope,
+    bool isRequired = false,
+    dynamic defaultValue,
     Key? key,
   }) {
-    if (schema == null) {
-      return null;
-    }
-
     switch (schema["type"]) {
       case ControlTypes.string:
         return JFCString(
@@ -43,6 +42,7 @@ abstract class Control extends StatefulWidget {
           defaultValue: defaultValue,
           enumeration:
               schema["enum"] != null ? List<String>.from(schema["enum"]) : null,
+          options: options,
           key: key,
         );
 
@@ -52,6 +52,7 @@ abstract class Control extends StatefulWidget {
           scope: scope,
           isRequired: isRequired,
           defaultValue: defaultValue,
+          options: options,
           key: key,
         );
 
@@ -61,6 +62,7 @@ abstract class Control extends StatefulWidget {
           scope: scope,
           isRequired: isRequired,
           defaultValue: defaultValue,
+          options: options,
           precision: 2,
           key: key,
         );
@@ -71,6 +73,7 @@ abstract class Control extends StatefulWidget {
           scope: scope,
           isRequired: isRequired,
           defaultValue: defaultValue,
+          options: options,
           key: key,
         );
 

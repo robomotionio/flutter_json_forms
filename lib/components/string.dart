@@ -12,6 +12,7 @@ class JFCString extends Control {
     required super.scope,
     required super.isRequired,
     required super.defaultValue,
+    super.options,
     this.enumeration,
   });
 
@@ -54,6 +55,34 @@ class JFCStringState extends State<JFCString> {
     return null;
   }
 
+  Widget buildRadio(BuildContext context) {
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.start,
+      direction: Axis.horizontal,
+      spacing: 8,
+      children: widget.enumeration!.map(
+        (String element) {
+          return IntrinsicWidth(
+            child: RadioListTile<String>(
+              value: element,
+              groupValue: value,
+              dense: true,
+              title: Text(
+                element,
+                style: const TextStyle(fontSize: 16),
+              ),
+              onChanged: (val) {
+                setState(() {
+                  value = val ?? "";
+                });
+              },
+            ),
+          );
+        },
+      ).toList(),
+    );
+  }
+
   Widget buildDropDown(BuildContext context) {
     return DropdownButton<String>(
       value: value,
@@ -83,6 +112,19 @@ class JFCStringState extends State<JFCString> {
         );
       }).toList(),
     );
+  }
+
+  Widget buildEnum(BuildContext context) {
+    if (widget.options == null) {
+      return buildDropDown(context);
+    }
+
+    switch (widget.options!["format"]) {
+      case "radio":
+        return buildRadio(context);
+      default:
+        return buildDropDown(context);
+    }
   }
 
   Widget buildDatePicker(BuildContext context) {
@@ -166,7 +208,7 @@ class JFCStringState extends State<JFCString> {
         break;
       default:
         if (widget.enumeration != null) {
-          child = buildDropDown(context);
+          child = buildEnum(context);
         } else {
           child = buildTextField(context);
         }

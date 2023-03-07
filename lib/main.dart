@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: SizedBox(
-          width: 720,
+          width: 1080,
           child: const JsonForm(
             json: json,
           ),
@@ -129,7 +129,10 @@ const String json = '''{
           },
           {
             "type": "Control",
-            "scope": "#/properties/gender"
+            "scope": "#/properties/gender",
+            "options": {
+              "format": "radio"
+            }
           },
           {
             "type": "Control",
