@@ -5,13 +5,26 @@ import 'package:flutter_json_forms/components/control.dart';
 import 'package:flutter_json_forms/const.dart';
 import 'package:flutter_json_forms/const.dart' as jfc;
 
+class JsonFormController {
+  JsonFormController();
+  JsonForm? _jsonForm;
+
+  JsonForm get jsonForm {
+    assert(_jsonForm != null);
+    return _jsonForm!;
+  }
+}
+
 class JsonForm extends StatefulWidget {
   final dynamic json;
   final List<Control> _controls = [];
   final Map<String, dynamic> _formData = {};
   final Map<String, String> _errors = {};
+  final JsonFormController? controller;
 
-  JsonForm({super.key, required this.json});
+  JsonForm({super.key, required this.json, this.controller}) {
+    this.controller?._jsonForm = this;
+  }
 
   Map<String, dynamic> get formData {
     assert(_errors.isEmpty);
