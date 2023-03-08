@@ -1,6 +1,6 @@
 name: flutter_json_forms
 description: Flutter support for JSON Forms
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/robomotionio/flutter_json_forms
 
 environment:
@@ -16,7 +16,7 @@ dependencies:
   flutter:
     sdk: flutter
   recase: ^4.1.0
-  intl: ^0.18.0
+  intl: ^0.17.0
 
 
   # The following adds the Cupertino Icons font to your application.
