@@ -46,7 +46,7 @@ class JFCBooleanState extends State<JFCBoolean> {
           widget.label.titleCase,
           style: const TextStyle(fontSize: 16),
         ),
-        onChanged: (val) {},
+        onChanged: onValueChanged,
       ),
     );
   }
