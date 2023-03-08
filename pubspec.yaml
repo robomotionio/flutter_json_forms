@@ -1,6 +1,6 @@
 name: flutter_json_forms
 description: Flutter support for JSON Forms
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/robomotionio/flutter_json_forms
 
 environment:
