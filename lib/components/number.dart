@@ -67,7 +67,7 @@ class JFCNumberState extends State<JFCNumber> {
 
   String? errorText({double? value}) {
     value ??= this.value;
-    if (_controller.text.isEmpty || value == null) {
+    if (value == null) {
       return widget.isRequired ? "Value is required" : null;
     }
 
