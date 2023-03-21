@@ -27,6 +27,7 @@ class JFCStringState extends State<JFCString> {
 
   int _minLength = 0;
   int? _maxLength;
+  bool showSecret = false;
 
   late String value;
 
@@ -185,7 +186,7 @@ class JFCStringState extends State<JFCString> {
     return TextField(
       controller: _controller,
       enabled: widget.options?["readonly"] != true,
-      obscureText: widget.options?["secret"] == true,
+      obscureText: widget.options?["secret"] == true && !showSecret,
       onChanged: ((val) {
         onValueChanged(val);
       }),
@@ -198,17 +199,37 @@ class JFCStringState extends State<JFCString> {
         labelText: widget.label.titleCase,
         counterText: "",
         contentPadding: const EdgeInsets.all(2),
-        suffixIcon: IconButton(
-          icon: const Icon(Icons.close),
-          tooltip: value.isEmpty ? null : "Clear",
-          splashRadius: 12,
-          iconSize: 18,
-          onPressed: value.isEmpty
-              ? null
-              : () {
-                  onValueChanged("");
-                  _controller.text = "";
-                },
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            widget.options?["secret"] == true
+                ? IconButton(
+                    icon: Icon(
+                      showSecret ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    tooltip: showSecret ? "Hide" : "Show",
+                    splashRadius: 12,
+                    iconSize: 18,
+                    onPressed: () {
+                      setState(() {
+                        showSecret = !showSecret;
+                      });
+                    },
+                  )
+                : Container(),
+            IconButton(
+              icon: const Icon(Icons.close),
+              tooltip: value.isEmpty ? null : "Clear",
+              splashRadius: 12,
+              iconSize: 18,
+              onPressed: value.isEmpty
+                  ? null
+                  : () {
+                      onValueChanged("");
+                      _controller.text = "";
+                    },
+            ),
+          ],
         ),
       ),
     );
