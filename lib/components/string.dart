@@ -44,9 +44,11 @@ class JFCStringState extends State<JFCString> {
     }
 
     String val = widget.defaultValue ?? "";
+    /*
     if (val.isEmpty && widget.enumeration != null) {
       val = widget.enumeration!.first.snakeCase;
     }
+    */
 
     onValueChanged(val);
     _controller.text = val;
@@ -205,7 +207,7 @@ class JFCStringState extends State<JFCString> {
             widget.options?["secret"] == true
                 ? IconButton(
                     icon: Icon(
-                      showSecret ? Icons.visibility_off : Icons.visibility,
+                      showSecret ? Icons.visibility : Icons.visibility_off,
                     ),
                     tooltip: showSecret ? "Hide" : "Show",
                     splashRadius: 12,
