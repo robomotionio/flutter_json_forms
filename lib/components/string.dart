@@ -83,7 +83,7 @@ class JFCStringState extends State<JFCString> {
         (String element) {
           return IntrinsicWidth(
             child: RadioListTile<String>(
-              value: element.snakeCase,
+              value: element,
               groupValue: value,
               dense: true,
               title: Text(
@@ -123,7 +123,7 @@ class JFCStringState extends State<JFCString> {
       items:
           widget.enumeration!.map<DropdownMenuItem<String>>((String element) {
         return DropdownMenuItem<String>(
-          value: element.snakeCase,
+          value: element,
           child: Text(
             element,
             style: const TextStyle(fontSize: 16),
