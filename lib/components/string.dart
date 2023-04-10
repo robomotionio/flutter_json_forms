@@ -105,6 +105,7 @@ class JFCStringState extends State<JFCString> {
   Widget buildDropDown(BuildContext context) {
     return DropdownButton<String>(
       value: value,
+      hint: Text(widget.schema["title"] ?? "Select"),
       icon: const Icon(Icons.arrow_drop_down),
       iconSize: 32,
       isExpanded: true,
