@@ -265,10 +265,6 @@ class JFCStringState extends State<JFCString> {
 
   Widget buildTextField(BuildContext context) {
     String? title = widget.schema["title"];
-    widget.schema["description"] = {
-      "text": "asdas",
-      "size": 18,
-    };
     dynamic description = widget.schema["description"];
     String? helperText = widget.schema["helperText"];
     String? placeholder = widget.schema["placeholder"];
