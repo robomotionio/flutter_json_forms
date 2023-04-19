@@ -162,6 +162,7 @@ class JFCStringState extends State<JFCString> {
     String? title = widget.schema["title"];
     String? description = widget.schema["description"];
     String? placeholder = widget.schema["placeholder"];
+    bool? hideLabel = widget.schema["hideLabel"];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,7 +175,7 @@ class JFCStringState extends State<JFCString> {
           readOnly: true,
           enabled: widget.options?["readonly"] != true,
           decoration: InputDecoration(
-            labelText: widget.label.titleCase,
+            labelText: hideLabel == true ? null : widget.label.titleCase,
             hintText: placeholder ?? "dd.MM.yyyy",
             helperText: description,
             contentPadding: const EdgeInsets.all(2),
@@ -212,7 +213,8 @@ class JFCStringState extends State<JFCString> {
     String? title = widget.schema["title"];
     String? description = widget.schema["description"];
     String? placeholder = widget.schema["placeholder"];
-    int? maxLines = widget.schema["maxLines"] ?? null;
+    int? maxLines = widget.schema["maxLines"];
+    bool? hideLabel = widget.schema["hideLabel"];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,7 +235,7 @@ class JFCStringState extends State<JFCString> {
           decoration: InputDecoration(
             errorText: errorText(),
             border: const UnderlineInputBorder(),
-            labelText: widget.label.titleCase,
+            labelText: hideLabel == true ? null : widget.label.titleCase,
             counterText: "",
             helperText: description,
             hintText: placeholder,

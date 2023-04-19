@@ -93,6 +93,7 @@ class JFCNumberState extends State<JFCNumber> {
     String? title = widget.schema["title"];
     String? description = widget.schema["description"];
     String? placeholder = widget.schema["placeholder"];
+    bool? hideLabel = widget.schema["hideLabel"];
 
     return Padding(
       padding: const EdgeInsets.all(8),
@@ -114,7 +115,7 @@ class JFCNumberState extends State<JFCNumber> {
             decoration: InputDecoration(
               border: const UnderlineInputBorder(),
               errorText: errorText(),
-              labelText: widget.label.titleCase,
+              labelText: hideLabel == true ? null : widget.label.titleCase,
               helperText: description,
               hintText: placeholder,
               contentPadding: const EdgeInsets.fromLTRB(2, 2, 2, 8),
