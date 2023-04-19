@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_json_forms/components/control.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:recase/recase.dart';
 import 'dart:math' as math;
+
+import 'package:url_launcher/url_launcher.dart';
 
 class JFCNumber extends Control {
   final int precision;
@@ -90,62 +93,90 @@ class JFCNumberState extends State<JFCNumber> {
 
   @override
   Widget build(BuildContext context) {
+    String? title = widget.schema["title"];
+    dynamic description = widget.schema["description"];
+    String? helperText = widget.schema["helperText"];
+    String? placeholder = widget.schema["placeholder"];
+    bool? hideLabel = widget.schema["hideLabel"];
+
     return Padding(
       padding: const EdgeInsets.all(8),
-      child: TextField(
-        controller: _controller,
-        enabled: widget.options?["readonly"] != true,
-        onChanged: (val) {
-          onValueChanged(double.tryParse(val));
-        },
-        keyboardType: TextInputType.number,
-        inputFormatters: _formatters,
-        textAlign: TextAlign.start,
-        textAlignVertical: TextAlignVertical.center,
-        decoration: InputDecoration(
-          border: const UnderlineInputBorder(),
-          errorText: errorText(),
-          labelText: widget.label.titleCase,
-          contentPadding: const EdgeInsets.fromLTRB(2, 2, 2, 8),
-          suffixIcon: Container(
-            margin: const EdgeInsets.only(top: 4, bottom: 4),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  height: 18,
-                  width: 18,
-                  padding: EdgeInsets.zero,
-                  child: InkWell(
-                    onTap: () {
-                      double? val = value ?? 0;
-                      val = val + math.pow(10, -widget.precision);
-                      val = double.tryParse(val.toStringAsFixed(2));
-                      onValueChanged(val);
-                      _controller.text = val.toString();
-                    },
-                    child: const Icon(Icons.arrow_drop_up, size: 18),
-                  ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          title != null ? Text(title) : Container(),
+          title != null ? const SizedBox(height: 8) : Container(),
+          TextField(
+            controller: _controller,
+            enabled: widget.options?["readonly"] != true,
+            onChanged: (val) {
+              onValueChanged(double.tryParse(val));
+            },
+            keyboardType: TextInputType.number,
+            inputFormatters: _formatters,
+            textAlign: TextAlign.start,
+            textAlignVertical: TextAlignVertical.center,
+            decoration: InputDecoration(
+              border: const UnderlineInputBorder(),
+              errorText: errorText(),
+              labelText: hideLabel == true ? null : widget.label.titleCase,
+              helperText: helperText,
+              hintText: placeholder,
+              contentPadding: const EdgeInsets.fromLTRB(2, 2, 2, 8),
+              suffixIcon: Container(
+                margin: const EdgeInsets.only(top: 4, bottom: 4),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      height: 18,
+                      width: 18,
+                      padding: EdgeInsets.zero,
+                      child: InkWell(
+                        onTap: () {
+                          double? val = value ?? 0;
+                          val = val + math.pow(10, -widget.precision);
+                          val = double.tryParse(val.toStringAsFixed(2));
+                          onValueChanged(val);
+                          _controller.text = val.toString();
+                        },
+                        child: const Icon(Icons.arrow_drop_up, size: 18),
+                      ),
+                    ),
+                    Container(
+                      height: 18,
+                      width: 18,
+                      padding: EdgeInsets.zero,
+                      child: InkWell(
+                        onTap: () {
+                          double? val = value ?? 0;
+                          val = val - math.pow(10, -widget.precision);
+                          val = double.tryParse(val.toStringAsFixed(2));
+                          onValueChanged(val);
+                          _controller.text = val.toString();
+                        },
+                        child: const Icon(Icons.arrow_drop_down, size: 18),
+                      ),
+                    ),
+                  ],
                 ),
-                Container(
-                  height: 18,
-                  width: 18,
-                  padding: EdgeInsets.zero,
-                  child: InkWell(
-                    onTap: () {
-                      double? val = value ?? 0;
-                      val = val - math.pow(10, -widget.precision);
-                      val = double.tryParse(val.toStringAsFixed(2));
-                      onValueChanged(val);
-                      _controller.text = val.toString();
-                    },
-                    child: const Icon(Icons.arrow_drop_down, size: 18),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+          description != null ? const SizedBox(height: 8) : Container(),
+          description != null
+              ? MarkdownBody(
+                  data: description["text"],
+                  onTapLink: (text, href, title) {
+                    launchUrl(Uri.parse(href!));
+                  },
+                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                      .copyWith(
+                          p: Theme.of(context).textTheme.headline1?.copyWith(
+                              fontSize: description["size"] ?? 14.0)),
+                )
+              : Container(),
+        ],
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_json_forms/components/control.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:recase/recase.dart';
 import 'package:intl/intl.dart';
 
@@ -75,62 +77,109 @@ class JFCStringState extends State<JFCString> {
   }
 
   Widget buildRadio(BuildContext context) {
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.start,
-      direction: Axis.horizontal,
-      spacing: 8,
-      children: widget.enumeration!.map(
-        (String element) {
-          return IntrinsicWidth(
-            child: RadioListTile<String>(
-              value: element,
-              groupValue: value,
-              dense: true,
-              title: Text(
-                element,
-                style: const TextStyle(fontSize: 16),
-              ),
-              onChanged: widget.options?["readonly"] == true
-                  ? null
-                  : (val) {
-                      onValueChanged(val ?? "");
-                    },
-            ),
-          );
-        },
-      ).toList(),
+    String? title = widget.schema["title"];
+    dynamic description = widget.schema["description"];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        title != null ? Text(title) : Container(),
+        title != null ? const SizedBox(height: 8) : Container(),
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.start,
+          direction: Axis.horizontal,
+          spacing: 8,
+          children: widget.enumeration!.map(
+            (String element) {
+              return IntrinsicWidth(
+                child: RadioListTile<String>(
+                  value: element,
+                  groupValue: value,
+                  dense: true,
+                  title: Text(
+                    element,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  onChanged: widget.options?["readonly"] == true
+                      ? null
+                      : (val) {
+                          onValueChanged(val ?? "");
+                        },
+                ),
+              );
+            },
+          ).toList(),
+        ),
+        description != null ? const SizedBox(height: 8) : Container(),
+        description != null
+            ? MarkdownBody(
+                data: description["text"],
+                onTapLink: (text, href, title) {
+                  launchUrl(Uri.parse(href!));
+                },
+                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                    .copyWith(
+                        p: Theme.of(context)
+                            .textTheme
+                            .headline1
+                            ?.copyWith(fontSize: description["size"] ?? 14.0)),
+              )
+            : Container(),
+      ],
     );
   }
 
   Widget buildDropDown(BuildContext context) {
-    return DropdownButton<String>(
-      value: value,
-      hint: Text(widget.schema["title"] ?? "Select"),
-      icon: const Icon(Icons.arrow_drop_down),
-      iconSize: 32,
-      isExpanded: true,
-      itemHeight: 56,
-      underline: Container(
-        height: 2,
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFBDBDBD)),
-        ),
-      ),
-      onChanged: widget.options?["readonly"] == true
-          ? null
-          : (String? val) {
-              onValueChanged(val ?? "");
-            },
-      items:
-          widget.enumeration!.map<DropdownMenuItem<String>>((String element) {
-        return DropdownMenuItem<String>(
-          value: element,
-          child: Text(
-            element,
-            style: const TextStyle(fontSize: 16),
+    String? title = widget.schema["title"];
+    dynamic description = widget.schema["description"];
+
+    return Column(
+      children: [
+        DropdownButton<String>(
+          value: value,
+          hint: Text(title ?? "Select"),
+          icon: const Icon(Icons.arrow_drop_down),
+          iconSize: 32,
+          isExpanded: true,
+          itemHeight: 56,
+          underline: Container(
+            height: 2,
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xFFBDBDBD)),
+            ),
           ),
-        );
-      }).toList(),
+          onChanged: widget.options?["readonly"] == true
+              ? null
+              : (String? val) {
+                  onValueChanged(val ?? "");
+                },
+          items: widget.enumeration!
+              .map<DropdownMenuItem<String>>((String element) {
+            return DropdownMenuItem<String>(
+              value: element,
+              child: Text(
+                element,
+                style: const TextStyle(fontSize: 16),
+              ),
+            );
+          }).toList(),
+        ),
+        description != null ? const SizedBox(height: 8) : Container(),
+        description != null
+            ? MarkdownBody(
+                data: description["text"],
+                onTapLink: (text, href, title) {
+                  launchUrl(Uri.parse(href!));
+                },
+                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                    .copyWith(
+                        p: Theme.of(context)
+                            .textTheme
+                            .headline1
+                            ?.copyWith(fontSize: description["size"] ?? 14.0)),
+              )
+            : Container(),
+      ],
     );
   }
 
@@ -148,93 +197,154 @@ class JFCStringState extends State<JFCString> {
   }
 
   Widget buildDatePicker(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      onTap: () async {},
-      readOnly: true,
-      enabled: widget.options?["readonly"] != true,
-      decoration: InputDecoration(
-        labelText: widget.label.titleCase,
-        hintText: "dd.MM.yyyy",
-        contentPadding: const EdgeInsets.all(2),
-        suffixIcon: IconButton(
-          icon: const Icon(Icons.calendar_today),
-          tooltip: "Select",
-          splashRadius: 24,
-          iconSize: 18,
-          onPressed: widget.options?["readonly"] == true
-              ? null
-              : () async {
-                  DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(2099),
-                  );
+    String? title = widget.schema["title"];
+    dynamic description = widget.schema["description"];
+    String? helperText = widget.schema["helperText"];
+    String? placeholder = widget.schema["placeholder"];
+    bool? hideLabel = widget.schema["hideLabel"];
 
-                  if (picked == null) {
-                    return;
-                  }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        title != null ? Text(title) : Container(),
+        title != null ? const SizedBox(height: 8) : Container(),
+        TextField(
+          controller: _controller,
+          onTap: () async {},
+          readOnly: true,
+          enabled: widget.options?["readonly"] != true,
+          decoration: InputDecoration(
+            labelText: hideLabel == true ? null : widget.label.titleCase,
+            hintText: placeholder ?? "dd.MM.yyyy",
+            helperText: helperText,
+            contentPadding: const EdgeInsets.all(2),
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.calendar_today),
+              tooltip: "Select",
+              splashRadius: 24,
+              iconSize: 18,
+              onPressed: widget.options?["readonly"] == true
+                  ? null
+                  : () async {
+                      DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime(2099),
+                      );
 
-                  String val = _dateFormat.format(picked);
-                  onValueChanged(val);
-                  _controller.text = val;
-                },
+                      if (picked == null) {
+                        return;
+                      }
+
+                      String val = _dateFormat.format(picked);
+                      onValueChanged(val);
+                      _controller.text = val;
+                    },
+            ),
+          ),
         ),
-      ),
+        description != null ? const SizedBox(height: 8) : Container(),
+        description != null
+            ? MarkdownBody(
+                data: description["text"],
+                onTapLink: (text, href, title) {
+                  launchUrl(Uri.parse(href!));
+                },
+                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                    .copyWith(
+                        p: Theme.of(context)
+                            .textTheme
+                            .headline1
+                            ?.copyWith(fontSize: description["size"] ?? 14.0)),
+              )
+            : Container(),
+      ],
     );
   }
 
   Widget buildTextField(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      enabled: widget.options?["readonly"] != true,
-      obscureText: widget.options?["secret"] == true && !showSecret,
-      onChanged: ((val) {
-        onValueChanged(val);
-      }),
-      textAlign: TextAlign.start,
-      textAlignVertical: TextAlignVertical.center,
-      maxLength: _maxLength,
-      decoration: InputDecoration(
-        errorText: errorText(),
-        border: const UnderlineInputBorder(),
-        labelText: widget.label.titleCase,
-        counterText: "",
-        contentPadding: const EdgeInsets.all(2),
-        suffixIcon: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            widget.options?["secret"] == true
-                ? IconButton(
-                    icon: Icon(
-                      showSecret ? Icons.visibility : Icons.visibility_off,
-                    ),
-                    tooltip: showSecret ? "Hide" : "Show",
-                    splashRadius: 12,
-                    iconSize: 18,
-                    onPressed: () {
-                      setState(() {
-                        showSecret = !showSecret;
-                      });
-                    },
-                  )
-                : Container(),
-            IconButton(
-              icon: const Icon(Icons.close),
-              tooltip: value.isEmpty ? null : "Clear",
-              splashRadius: 12,
-              iconSize: 18,
-              onPressed: value.isEmpty
-                  ? null
-                  : () {
-                      onValueChanged("");
-                      _controller.text = "";
-                    },
+    String? title = widget.schema["title"];
+    dynamic description = widget.schema["description"];
+    String? helperText = widget.schema["helperText"];
+    String? placeholder = widget.schema["placeholder"];
+    int? maxLines = widget.schema["maxLines"];
+    bool? hideLabel = widget.schema["hideLabel"];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        title != null ? Text(title) : Container(),
+        title != null ? const SizedBox(height: 8) : Container(),
+        TextField(
+          maxLines: maxLines,
+          controller: _controller,
+          enabled: widget.options?["readonly"] != true,
+          obscureText: widget.options?["secret"] == true && !showSecret,
+          onChanged: ((val) {
+            onValueChanged(val);
+          }),
+          textAlign: TextAlign.start,
+          textAlignVertical: TextAlignVertical.center,
+          maxLength: _maxLength,
+          decoration: InputDecoration(
+            errorText: errorText(),
+            border: const UnderlineInputBorder(),
+            labelText: hideLabel == true ? null : widget.label.titleCase,
+            counterText: "",
+            helperText: helperText,
+            hintText: placeholder,
+            contentPadding: const EdgeInsets.all(2),
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                widget.options?["secret"] == true
+                    ? IconButton(
+                        icon: Icon(
+                          showSecret ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        tooltip: showSecret ? "Hide" : "Show",
+                        splashRadius: 12,
+                        iconSize: 18,
+                        onPressed: () {
+                          setState(() {
+                            showSecret = !showSecret;
+                          });
+                        },
+                      )
+                    : Container(),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  tooltip: value.isEmpty ? null : "Clear",
+                  splashRadius: 12,
+                  iconSize: 18,
+                  onPressed: value.isEmpty
+                      ? null
+                      : () {
+                          onValueChanged("");
+                          _controller.text = "";
+                        },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+        description != null ? const SizedBox(height: 8) : Container(),
+        description != null
+            ? MarkdownBody(
+                data: description["text"],
+                onTapLink: (text, href, title) {
+                  launchUrl(Uri.parse(href!));
+                },
+                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                    .copyWith(
+                        p: Theme.of(context)
+                            .textTheme
+                            .headline1
+                            ?.copyWith(fontSize: description["size"] ?? 14.0)),
+              )
+            : Container(),
+      ],
     );
   }
 

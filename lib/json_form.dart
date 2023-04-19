@@ -69,7 +69,7 @@ class JsonFormState extends State<JsonForm> {
       json[FormTypes.schema],
     );
 
-    return List<String>.from(schema["required"])
+    return List<String>.from(schema["required"] ?? [])
         .contains(scope.split("/").last);
   }
 
@@ -106,7 +106,7 @@ class JsonFormState extends State<JsonForm> {
         return buildLayout(context, element);
 
       case ElementTypes.verticalLayout:
-        return Expanded(child: buildLayout(context, element));
+        return buildLayout(context, element);
 
       case ElementTypes.control:
         String scope = element["scope"] ?? "";
@@ -124,9 +124,7 @@ class JsonFormState extends State<JsonForm> {
         }
 
         widget._controls.add(control);
-        return Expanded(
-          child: control,
-        );
+        return control;
 
       default:
         return Container();
@@ -152,7 +150,7 @@ class JsonFormState extends State<JsonForm> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: children,
+          children: children.map((c) => Expanded(child: c)).toList(),
         );
       case ElementTypes.verticalLayout:
         return Column(
@@ -168,8 +166,6 @@ class JsonFormState extends State<JsonForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: buildLayout(context, json[FormTypes.uiSchema]),
-    );
+    return buildLayout(context, json[FormTypes.uiSchema]);
   }
 }
