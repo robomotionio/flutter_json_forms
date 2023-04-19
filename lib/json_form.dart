@@ -69,7 +69,7 @@ class JsonFormState extends State<JsonForm> {
       json[FormTypes.schema],
     );
 
-    return List<String>.from(schema["required"])
+    return List<String>.from(schema["required"] ?? [])
         .contains(scope.split("/").last);
   }
 
@@ -168,7 +168,7 @@ class JsonFormState extends State<JsonForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return IntrinsicHeight(
       child: buildLayout(context, json[FormTypes.uiSchema]),
     );
   }
