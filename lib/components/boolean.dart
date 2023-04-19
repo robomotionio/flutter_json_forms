@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:recase/recase.dart';
 import 'package:flutter_json_forms/components/control.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class JFCBoolean extends Control {
   JFCBoolean({
@@ -36,6 +38,7 @@ class JFCBooleanState extends State<JFCBoolean> {
   @override
   Widget build(BuildContext context) {
     String? title = widget.schema["title"];
+    dynamic description = widget.schema["description"];
 
     return Padding(
       padding: const EdgeInsets.all(8),
@@ -55,6 +58,19 @@ class JFCBooleanState extends State<JFCBoolean> {
             ),
             onChanged: onValueChanged,
           ),
+          description != null ? const SizedBox(height: 8) : Container(),
+          description != null
+              ? MarkdownBody(
+                  data: description["text"],
+                  onTapLink: (text, href, title) {
+                    launchUrl(Uri.parse(href!));
+                  },
+                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                      .copyWith(
+                          p: Theme.of(context).textTheme.headline1?.copyWith(
+                              fontSize: description["size"] ?? 14.0)),
+                )
+              : Container(),
         ],
       ),
     );

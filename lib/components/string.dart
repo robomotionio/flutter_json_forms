@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_json_forms/components/control.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:recase/recase.dart';
 import 'package:intl/intl.dart';
 
@@ -76,6 +78,7 @@ class JFCStringState extends State<JFCString> {
 
   Widget buildRadio(BuildContext context) {
     String? title = widget.schema["title"];
+    dynamic description = widget.schema["description"];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,41 +110,76 @@ class JFCStringState extends State<JFCString> {
             },
           ).toList(),
         ),
+        description != null ? const SizedBox(height: 8) : Container(),
+        description != null
+            ? MarkdownBody(
+                data: description["text"],
+                onTapLink: (text, href, title) {
+                  launchUrl(Uri.parse(href!));
+                },
+                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                    .copyWith(
+                        p: Theme.of(context)
+                            .textTheme
+                            .headline1
+                            ?.copyWith(fontSize: description["size"] ?? 14.0)),
+              )
+            : Container(),
       ],
     );
   }
 
   Widget buildDropDown(BuildContext context) {
     String? title = widget.schema["title"];
+    dynamic description = widget.schema["description"];
 
-    return DropdownButton<String>(
-      value: value,
-      hint: Text(title ?? "Select"),
-      icon: const Icon(Icons.arrow_drop_down),
-      iconSize: 32,
-      isExpanded: true,
-      itemHeight: 56,
-      underline: Container(
-        height: 2,
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFBDBDBD)),
-        ),
-      ),
-      onChanged: widget.options?["readonly"] == true
-          ? null
-          : (String? val) {
-              onValueChanged(val ?? "");
-            },
-      items:
-          widget.enumeration!.map<DropdownMenuItem<String>>((String element) {
-        return DropdownMenuItem<String>(
-          value: element,
-          child: Text(
-            element,
-            style: const TextStyle(fontSize: 16),
+    return Column(
+      children: [
+        DropdownButton<String>(
+          value: value,
+          hint: Text(title ?? "Select"),
+          icon: const Icon(Icons.arrow_drop_down),
+          iconSize: 32,
+          isExpanded: true,
+          itemHeight: 56,
+          underline: Container(
+            height: 2,
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xFFBDBDBD)),
+            ),
           ),
-        );
-      }).toList(),
+          onChanged: widget.options?["readonly"] == true
+              ? null
+              : (String? val) {
+                  onValueChanged(val ?? "");
+                },
+          items: widget.enumeration!
+              .map<DropdownMenuItem<String>>((String element) {
+            return DropdownMenuItem<String>(
+              value: element,
+              child: Text(
+                element,
+                style: const TextStyle(fontSize: 16),
+              ),
+            );
+          }).toList(),
+        ),
+        description != null ? const SizedBox(height: 8) : Container(),
+        description != null
+            ? MarkdownBody(
+                data: description["text"],
+                onTapLink: (text, href, title) {
+                  launchUrl(Uri.parse(href!));
+                },
+                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                    .copyWith(
+                        p: Theme.of(context)
+                            .textTheme
+                            .headline1
+                            ?.copyWith(fontSize: description["size"] ?? 14.0)),
+              )
+            : Container(),
+      ],
     );
   }
 
@@ -160,6 +198,7 @@ class JFCStringState extends State<JFCString> {
 
   Widget buildDatePicker(BuildContext context) {
     String? title = widget.schema["title"];
+    dynamic description = widget.schema["description"];
     String? helperText = widget.schema["helperText"];
     String? placeholder = widget.schema["placeholder"];
     bool? hideLabel = widget.schema["hideLabel"];
@@ -205,12 +244,32 @@ class JFCStringState extends State<JFCString> {
             ),
           ),
         ),
+        description != null ? const SizedBox(height: 8) : Container(),
+        description != null
+            ? MarkdownBody(
+                data: description["text"],
+                onTapLink: (text, href, title) {
+                  launchUrl(Uri.parse(href!));
+                },
+                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                    .copyWith(
+                        p: Theme.of(context)
+                            .textTheme
+                            .headline1
+                            ?.copyWith(fontSize: description["size"] ?? 14.0)),
+              )
+            : Container(),
       ],
     );
   }
 
   Widget buildTextField(BuildContext context) {
     String? title = widget.schema["title"];
+    widget.schema["description"] = {
+      "text": "asdas",
+      "size": 18,
+    };
+    dynamic description = widget.schema["description"];
     String? helperText = widget.schema["helperText"];
     String? placeholder = widget.schema["placeholder"];
     int? maxLines = widget.schema["maxLines"];
@@ -274,6 +333,21 @@ class JFCStringState extends State<JFCString> {
             ),
           ),
         ),
+        description != null ? const SizedBox(height: 8) : Container(),
+        description != null
+            ? MarkdownBody(
+                data: description["text"],
+                onTapLink: (text, href, title) {
+                  launchUrl(Uri.parse(href!));
+                },
+                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                    .copyWith(
+                        p: Theme.of(context)
+                            .textTheme
+                            .headline1
+                            ?.copyWith(fontSize: description["size"] ?? 14.0)),
+              )
+            : Container(),
       ],
     );
   }
