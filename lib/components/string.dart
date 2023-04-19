@@ -212,6 +212,7 @@ class JFCStringState extends State<JFCString> {
     String? title = widget.schema["title"];
     String? description = widget.schema["description"];
     String? placeholder = widget.schema["placeholder"];
+    int? maxLines = widget.schema["maxLines"] ?? null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,6 +220,7 @@ class JFCStringState extends State<JFCString> {
         title != null ? Text(title) : Container(),
         title != null ? const SizedBox(height: 8) : Container(),
         TextField(
+          maxLines: maxLines,
           controller: _controller,
           enabled: widget.options?["readonly"] != true,
           obscureText: widget.options?["secret"] == true && !showSecret,
