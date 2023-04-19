@@ -75,37 +75,48 @@ class JFCStringState extends State<JFCString> {
   }
 
   Widget buildRadio(BuildContext context) {
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.start,
-      direction: Axis.horizontal,
-      spacing: 8,
-      children: widget.enumeration!.map(
-        (String element) {
-          return IntrinsicWidth(
-            child: RadioListTile<String>(
-              value: element,
-              groupValue: value,
-              dense: true,
-              title: Text(
-                element,
-                style: const TextStyle(fontSize: 16),
-              ),
-              onChanged: widget.options?["readonly"] == true
-                  ? null
-                  : (val) {
-                      onValueChanged(val ?? "");
-                    },
-            ),
-          );
-        },
-      ).toList(),
+    String? title = widget.schema["title"];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        title != null ? Text(title) : Container(),
+        title != null ? const SizedBox(height: 8) : Container(),
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.start,
+          direction: Axis.horizontal,
+          spacing: 8,
+          children: widget.enumeration!.map(
+            (String element) {
+              return IntrinsicWidth(
+                child: RadioListTile<String>(
+                  value: element,
+                  groupValue: value,
+                  dense: true,
+                  title: Text(
+                    element,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  onChanged: widget.options?["readonly"] == true
+                      ? null
+                      : (val) {
+                          onValueChanged(val ?? "");
+                        },
+                ),
+              );
+            },
+          ).toList(),
+        ),
+      ],
     );
   }
 
   Widget buildDropDown(BuildContext context) {
+    String? title = widget.schema["title"];
+
     return DropdownButton<String>(
       value: value,
-      hint: Text(widget.schema["title"] ?? "Select"),
+      hint: Text(title ?? "Select"),
       icon: const Icon(Icons.arrow_drop_down),
       iconSize: 32,
       isExpanded: true,
@@ -148,93 +159,118 @@ class JFCStringState extends State<JFCString> {
   }
 
   Widget buildDatePicker(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      onTap: () async {},
-      readOnly: true,
-      enabled: widget.options?["readonly"] != true,
-      decoration: InputDecoration(
-        labelText: widget.label.titleCase,
-        hintText: "dd.MM.yyyy",
-        contentPadding: const EdgeInsets.all(2),
-        suffixIcon: IconButton(
-          icon: const Icon(Icons.calendar_today),
-          tooltip: "Select",
-          splashRadius: 24,
-          iconSize: 18,
-          onPressed: widget.options?["readonly"] == true
-              ? null
-              : () async {
-                  DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(2099),
-                  );
+    String? title = widget.schema["title"];
+    String? description = widget.schema["description"];
+    String? placeholder = widget.schema["placeholder"];
 
-                  if (picked == null) {
-                    return;
-                  }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        title != null ? Text(title) : Container(),
+        title != null ? const SizedBox(height: 8) : Container(),
+        TextField(
+          controller: _controller,
+          onTap: () async {},
+          readOnly: true,
+          enabled: widget.options?["readonly"] != true,
+          decoration: InputDecoration(
+            labelText: widget.label.titleCase,
+            hintText: placeholder ?? "dd.MM.yyyy",
+            helperText: description,
+            contentPadding: const EdgeInsets.all(2),
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.calendar_today),
+              tooltip: "Select",
+              splashRadius: 24,
+              iconSize: 18,
+              onPressed: widget.options?["readonly"] == true
+                  ? null
+                  : () async {
+                      DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime(2099),
+                      );
 
-                  String val = _dateFormat.format(picked);
-                  onValueChanged(val);
-                  _controller.text = val;
-                },
+                      if (picked == null) {
+                        return;
+                      }
+
+                      String val = _dateFormat.format(picked);
+                      onValueChanged(val);
+                      _controller.text = val;
+                    },
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 
   Widget buildTextField(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      enabled: widget.options?["readonly"] != true,
-      obscureText: widget.options?["secret"] == true && !showSecret,
-      onChanged: ((val) {
-        onValueChanged(val);
-      }),
-      textAlign: TextAlign.start,
-      textAlignVertical: TextAlignVertical.center,
-      maxLength: _maxLength,
-      decoration: InputDecoration(
-        errorText: errorText(),
-        border: const UnderlineInputBorder(),
-        labelText: widget.label.titleCase,
-        counterText: "",
-        contentPadding: const EdgeInsets.all(2),
-        suffixIcon: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            widget.options?["secret"] == true
-                ? IconButton(
-                    icon: Icon(
-                      showSecret ? Icons.visibility : Icons.visibility_off,
-                    ),
-                    tooltip: showSecret ? "Hide" : "Show",
-                    splashRadius: 12,
-                    iconSize: 18,
-                    onPressed: () {
-                      setState(() {
-                        showSecret = !showSecret;
-                      });
-                    },
-                  )
-                : Container(),
-            IconButton(
-              icon: const Icon(Icons.close),
-              tooltip: value.isEmpty ? null : "Clear",
-              splashRadius: 12,
-              iconSize: 18,
-              onPressed: value.isEmpty
-                  ? null
-                  : () {
-                      onValueChanged("");
-                      _controller.text = "";
-                    },
+    String? title = widget.schema["title"];
+    String? description = widget.schema["description"];
+    String? placeholder = widget.schema["placeholder"];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        title != null ? Text(title) : Container(),
+        title != null ? const SizedBox(height: 8) : Container(),
+        TextField(
+          controller: _controller,
+          enabled: widget.options?["readonly"] != true,
+          obscureText: widget.options?["secret"] == true && !showSecret,
+          onChanged: ((val) {
+            onValueChanged(val);
+          }),
+          textAlign: TextAlign.start,
+          textAlignVertical: TextAlignVertical.center,
+          maxLength: _maxLength,
+          decoration: InputDecoration(
+            errorText: errorText(),
+            border: const UnderlineInputBorder(),
+            labelText: widget.label.titleCase,
+            counterText: "",
+            helperText: description,
+            hintText: placeholder,
+            contentPadding: const EdgeInsets.all(2),
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                widget.options?["secret"] == true
+                    ? IconButton(
+                        icon: Icon(
+                          showSecret ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        tooltip: showSecret ? "Hide" : "Show",
+                        splashRadius: 12,
+                        iconSize: 18,
+                        onPressed: () {
+                          setState(() {
+                            showSecret = !showSecret;
+                          });
+                        },
+                      )
+                    : Container(),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  tooltip: value.isEmpty ? null : "Clear",
+                  splashRadius: 12,
+                  iconSize: 18,
+                  onPressed: value.isEmpty
+                      ? null
+                      : () {
+                          onValueChanged("");
+                          _controller.text = "";
+                        },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 

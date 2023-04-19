@@ -35,18 +35,27 @@ class JFCBooleanState extends State<JFCBoolean> {
 
   @override
   Widget build(BuildContext context) {
+    String? title = widget.schema["title"];
+
     return Padding(
       padding: const EdgeInsets.all(8),
-      child: CheckboxListTile(
-        value: value ?? false,
-        dense: true,
-        enabled: widget.options?["readonly"] != true,
-        controlAffinity: ListTileControlAffinity.leading,
-        title: Text(
-          widget.label.titleCase,
-          style: const TextStyle(fontSize: 16),
-        ),
-        onChanged: onValueChanged,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          title != null ? Text(title) : Container(),
+          title != null ? const SizedBox(height: 8) : Container(),
+          CheckboxListTile(
+            value: value ?? false,
+            dense: true,
+            enabled: widget.options?["readonly"] != true,
+            controlAffinity: ListTileControlAffinity.leading,
+            title: Text(
+              widget.label.titleCase,
+              style: const TextStyle(fontSize: 16),
+            ),
+            onChanged: onValueChanged,
+          ),
+        ],
       ),
     );
   }
