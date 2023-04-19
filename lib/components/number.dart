@@ -91,7 +91,7 @@ class JFCNumberState extends State<JFCNumber> {
   @override
   Widget build(BuildContext context) {
     String? title = widget.schema["title"];
-    String? description = widget.schema["description"];
+    String? helperText = widget.schema["helperText"];
     String? placeholder = widget.schema["placeholder"];
     bool? hideLabel = widget.schema["hideLabel"];
 
@@ -116,7 +116,7 @@ class JFCNumberState extends State<JFCNumber> {
               border: const UnderlineInputBorder(),
               errorText: errorText(),
               labelText: hideLabel == true ? null : widget.label.titleCase,
-              helperText: description,
+              helperText: helperText,
               hintText: placeholder,
               contentPadding: const EdgeInsets.fromLTRB(2, 2, 2, 8),
               suffixIcon: Container(

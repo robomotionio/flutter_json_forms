@@ -160,7 +160,7 @@ class JFCStringState extends State<JFCString> {
 
   Widget buildDatePicker(BuildContext context) {
     String? title = widget.schema["title"];
-    String? description = widget.schema["description"];
+    String? helperText = widget.schema["helperText"];
     String? placeholder = widget.schema["placeholder"];
     bool? hideLabel = widget.schema["hideLabel"];
 
@@ -177,7 +177,7 @@ class JFCStringState extends State<JFCString> {
           decoration: InputDecoration(
             labelText: hideLabel == true ? null : widget.label.titleCase,
             hintText: placeholder ?? "dd.MM.yyyy",
-            helperText: description,
+            helperText: helperText,
             contentPadding: const EdgeInsets.all(2),
             suffixIcon: IconButton(
               icon: const Icon(Icons.calendar_today),
@@ -211,7 +211,7 @@ class JFCStringState extends State<JFCString> {
 
   Widget buildTextField(BuildContext context) {
     String? title = widget.schema["title"];
-    String? description = widget.schema["description"];
+    String? helperText = widget.schema["helperText"];
     String? placeholder = widget.schema["placeholder"];
     int? maxLines = widget.schema["maxLines"];
     bool? hideLabel = widget.schema["hideLabel"];
@@ -237,7 +237,7 @@ class JFCStringState extends State<JFCString> {
             border: const UnderlineInputBorder(),
             labelText: hideLabel == true ? null : widget.label.titleCase,
             counterText: "",
-            helperText: description,
+            helperText: helperText,
             hintText: placeholder,
             contentPadding: const EdgeInsets.all(2),
             suffixIcon: Row(
