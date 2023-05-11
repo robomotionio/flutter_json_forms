@@ -268,6 +268,7 @@ class JFCStringState extends State<JFCString> {
     dynamic description = widget.schema["description"];
     String? helperText = widget.schema["helperText"];
     String? placeholder = widget.schema["placeholder"];
+    int? minLines = widget.schema["minLines"];
     int? maxLines = widget.schema["maxLines"];
     bool? hideLabel = widget.schema["hideLabel"];
 
@@ -277,6 +278,8 @@ class JFCStringState extends State<JFCString> {
         title != null ? Text(title) : Container(),
         title != null ? const SizedBox(height: 8) : Container(),
         TextField(
+          keyboardType: TextInputType.multiline,
+          minLines: minLines,
           maxLines: maxLines,
           controller: _controller,
           enabled: widget.options?["readonly"] != true,
