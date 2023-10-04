@@ -34,8 +34,8 @@ class JFCStringState extends State<JFCString> {
   int? _maxLength;
   bool showSecret = false;
 
-  late String value;
-  late List<String> values;
+  String value = "";
+  List<String> values = [];
 
   @override
   void initState() {
