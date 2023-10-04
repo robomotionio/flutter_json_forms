@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_json_forms/components/control.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:recase/recase.dart';
 import 'package:intl/intl.dart';
@@ -32,6 +35,7 @@ class JFCStringState extends State<JFCString> {
   bool showSecret = false;
 
   late String value;
+  late List<String> values;
 
   @override
   void initState() {
@@ -45,7 +49,8 @@ class JFCStringState extends State<JFCString> {
       _maxLength = widget.schema["maxLength"];
     }
 
-    String val = widget.defaultValue ?? "";
+    dynamic val = widget.defaultValue ??
+        ((widget.options?["multiple"] == true) ? [] : "");
     /*
     if (val.isEmpty && widget.enumeration != null) {
       val = widget.enumeration!.first.snakeCase;
@@ -53,18 +58,27 @@ class JFCStringState extends State<JFCString> {
     */
 
     onValueChanged(val);
-    _controller.text = val;
+
+    if (val is String) {
+      _controller.text = val;
+    }
   }
 
-  String? errorText({String? value}) {
+  String? errorText({dynamic value}) {
     value ??= this.value;
+
+    if (!(value is String)) {
+      return null;
+    }
+
     if (value.isNotEmpty && value.length < _minLength) {
       return "Value must have at least $_minLength characters";
     }
+
     return null;
   }
 
-  void onValueChanged(String? val) {
+  void onValueChanged(dynamic val) {
     if (val == null) {
       return;
     }
@@ -72,7 +86,11 @@ class JFCStringState extends State<JFCString> {
     widget.onValueChanged(val, error: errorText(value: val));
 
     setState(() {
-      value = val;
+      if (val is String) {
+        value = val;
+      } else if (val is List) {
+        values = val.map((e) => e.toString()).toList();
+      }
     });
   }
 
@@ -132,38 +150,65 @@ class JFCStringState extends State<JFCString> {
   Widget buildDropDown(BuildContext context) {
     String? title = widget.schema["title"];
     dynamic description = widget.schema["description"];
+    bool multiple = widget.options?["multiple"] == true;
 
     return Column(
       children: [
-        DropdownButton<String>(
-          value: value,
-          hint: Text(title ?? "Select"),
-          icon: const Icon(Icons.arrow_drop_down),
-          iconSize: 32,
-          isExpanded: true,
-          itemHeight: 56,
-          underline: Container(
-            height: 2,
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFBDBDBD)),
-            ),
-          ),
-          onChanged: widget.options?["readonly"] == true
-              ? null
-              : (String? val) {
-                  onValueChanged(val ?? "");
+        multiple
+            ? MultiSelectDialogField(
+                items:
+                    widget.enumeration!.map<MultiSelectItem>((String element) {
+                  return MultiSelectItem(element, element);
+                }).toList(),
+                initialValue: values,
+                title: widget.schema["title"] != null
+                    ? Text(widget.schema["title"])
+                    : null,
+                buttonText: widget.schema["title"] != null
+                    ? Text(
+                        widget.schema["title"],
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w100,
+                          color: Color(0xFF888888),
+                        ),
+                      )
+                    : null,
+                listType: MultiSelectListType.LIST,
+                searchable: true,
+                onConfirm: (values) {
+                  onValueChanged(values);
                 },
-          items: widget.enumeration!
-              .map<DropdownMenuItem<String>>((String element) {
-            return DropdownMenuItem<String>(
-              value: element,
-              child: Text(
-                element,
-                style: const TextStyle(fontSize: 16),
+              )
+            : DropdownButton<String>(
+                value: value,
+                hint: Text(title ?? "Select"),
+                icon: const Icon(Icons.arrow_drop_down),
+                iconSize: 32,
+                isExpanded: true,
+                itemHeight: 56,
+                underline: Container(
+                  height: 2,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: const Color(0xFFBDBDBD)),
+                  ),
+                ),
+                onChanged: widget.options?["readonly"] == true
+                    ? null
+                    : (String? val) {
+                        onValueChanged(val ?? "");
+                      },
+                items: widget.enumeration!
+                    .map<DropdownMenuItem<String>>((String element) {
+                  return DropdownMenuItem<String>(
+                    value: element,
+                    child: Text(
+                      element,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  );
+                }).toList(),
               ),
-            );
-          }).toList(),
-        ),
         description != null ? const SizedBox(height: 8) : Container(),
         description != null
             ? MarkdownBody(
